@@ -1,0 +1,99 @@
+[project]
+name = "mioti-dl-proyectofinal"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "huggingface-hub[inference]>=0.32.0",
+    "llama-index>=0.12.37",
+    "llama-index-embeddings-huggingface>=0.5.4",
+    "llama-index-llms-huggingface>=0.5.0",
+    "llama-index-llms-huggingface-api>=0.4.3",
+    "llama-index-llms-openai>=0.3.44",
+    "llama-index-vector-stores-mongodb>=0.6.0",
+    "pymongo>=4.13.0",
+    "sentence-transformers>=4.1.0",
+    "transformers[torch]>=4.52.3",
+]
+
+[tool.ruff]
+fix = true
+indent-width = 4
+line-length = 100
+preview = true
+show-fixes = true
+
+[tool.ruff.format]
+docstring-code-format = true # Enable reformatting of code snippets in docstrings.
+
+[tool.ruff.lint]
+allowed-confusables = ['´']
+extend-select = [
+    "A",     # Shadowing rules.
+    "ASYNC", # Async rules.
+    "C4",    # Comprenhension rules. (dicts, lists, sets, etc.)
+    "C90",   # Cyclomatic complexity rules.
+    "D201",  # Docstring rules. -> No blank line before function.
+    "D202",  # Docstring rules. -> No blank line after function.
+    "D204",  # Docstring rules. -> 1 blank line after class docstring.
+    "I",     # Import rules.
+    "ISC",   # String concatenation rules.
+    "LOG",   # Logging rules.
+    "N",     # Naming rules.
+    "PERF",  # Performance rules.
+    "PIE",   # Unnecessary practices rules.
+    "PL",    # Pylint rules.
+    "PYI",   # Pyi rules.
+    "RET",   # Return rules.
+    "RUF",   # Ruff rules.
+    "TCH",   # Type checking rules.
+    "TID",   # Tidy imports rules.
+    "UP",    # Unittest rules.
+]
+
+ignore = [
+    "D102",   # Missing docstring in public method.
+    "ISC001", # ESPECIAL: Avoid lint incompatible with Ruff.
+    "ISC002", # ESPECIAL: Avoid lint incompatible with Ruff.
+    "RUF029", # No async function without await.
+]
+
+task-tags = ["ERROR", "HACK", "TODO", "WARNING"]
+
+[tool.ruff.lint.per-file-ignores]
+"*.ipynb" = ["F401"]
+
+[tool.ruff.lint.flake8-type-checking]
+strict = true
+
+[tool.ruff.lint.flake8-unused-arguments]
+ignore-variadic-names = true
+
+[tool.ruff.lint.mccabe]
+max-complexity = 5 # Maximum Cyclomatic complexity.
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+ignore-decorators = ["typing.overload"]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all" # Disallow all relative imports.
+
+[tool.pyright]
+disableBytesTypePromotions = true
+reportConstantRedefinition = "error"
+reportImplicitOverride = "warning"
+reportIncompatibleMethodOverride = "warning"
+reportMatchNotExhaustive = "warning"
+reportMissingImports = "error"
+reportMissingModuleSource = "error"
+reportUntypedBaseClass = "warning"
+reportUntypedClassDecorator = "warning"
+reportUntypedFunctionDecorator = "warning"
+strictDictionaryInference = true
+strictListInference = true
+strictSetInference = true
+typeCheckingMode = "standard"
+venv = ".venv"
+venvPath = "."
