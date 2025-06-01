@@ -5,14 +5,16 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "certifi>=2025.4.26",
     "huggingface-hub[inference]>=0.32.0",
-    "llama-index>=0.12.37",
+    "llama-index>=0.12.39",
     "llama-index-embeddings-huggingface>=0.5.4",
     "llama-index-llms-huggingface>=0.5.0",
     "llama-index-llms-huggingface-api>=0.4.3",
     "llama-index-llms-openai>=0.3.44",
     "llama-index-vector-stores-mongodb>=0.6.0",
     "pymongo>=4.13.0",
+    "python-dotenv>=1.1.0",
     "sentence-transformers>=4.1.0",
     "transformers[torch]>=4.52.3",
 ]
