@@ -28,3 +28,11 @@ Proyecto Final del master de Mioti en DeepLearning.
 ```bash
     uv sync
 ```
+
+
+## Ejecutar tests
+
+```bash
+    uv sync
+    uv run pytest
+```
