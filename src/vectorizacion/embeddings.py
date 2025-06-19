@@ -1,16 +1,22 @@
+import os
+
 from archivo_barril import *
+from dotenv import load_dotenv
+
+from constants import DB_NAME, MONGO_COLLECTION, MONGO_HOST
 
 # Configuración idéntica a la ingesta
-MONGO_URI       = "mongodb://localhost:27017"
-DB_NAME         = "pruebas"
-COLLECTION_NAME = "documentos_chunk"
 
-client     = MongoClient(MONGO_URI)
-db         = client[DB_NAME]
-collection = db[COLLECTION_NAME]
+load_dotenv()
+
+
+client = MongoClient(MONGO_HOST)
+db = client[DB_NAME]
+collection = db[MONGO_COLLECTION]
 
 # Se carga el modelo all-MiniLM-L6-v2
 model = SentenceTransformer("all-MiniLM-L6-v2")
+
 
 def vectorizar_chunks(batch_size: int = 32):
     """
@@ -25,28 +31,26 @@ def vectorizar_chunks(batch_size: int = 32):
         return
 
     textos = [d["texto_chunk"] for d in docs]
-    ids     = [d["_id"]          for d in docs]
+    ids = [d["_id"] for d in docs]
     ahora = datetime.now(timezone.utc)
 
     total = len(textos)
     for start in range(0, total, batch_size):
         end = min(start + batch_size, total)
         batch_texts = textos[start:end]
-        batch_ids   = ids[start:end]
+        batch_ids = ids[start:end]
 
         # 1) Generar embeddings
         vects = model.encode(batch_texts, show_progress_bar=True)
 
         # 2) Actualizar en Mongo
-        for doc_id, vec in zip(batch_ids, vects):
+        for doc_id, vec in zip(batch_ids, vects, strict=False):
             collection.update_one(
                 {"_id": doc_id},
-                {"$set": {
-                    "vector": vec.tolist(),
-                    "fecha_vectorizacion": ahora
-                }}
+                {"$set": {"vector": vec.tolist(), "fecha_vectorizacion": ahora}},
             )
-        print(f"Vectorizados documentos {start+1}-{end} de {total}")
+        print(f"Vectorizados documentos {start + 1}-{end} de {total}")
+
 
 if __name__ == "__main__":
     vectorizar_chunks(batch_size=32)

@@ -1,13 +1,10 @@
 from archivo_barril import *
 
-# --- CONFIGURACIÓN MONGO ---
-MONGO_URI = "mongodb://localhost:27017" #Aquí va la conexión
-DB_NAME = "pruebas"
-COLLECTION_NAME = "documentos_chunk"
+from constants import DB_NAME, MONGO_COLLECTION, MONGO_HOST
 
-client = MongoClient(MONGO_URI) #client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
+client = MongoClient(MONGO_HOST)  # client = MongoClient(MONGO_URI, tlsCAFile=certifi.where())
 db = client[DB_NAME]
-collection = db[COLLECTION_NAME]
+collection = db[MONGO_COLLECTION]
 
 
 class LectorPDF_Local:
@@ -81,11 +78,7 @@ def ingesta_pdfs_local(carpeta_pdfs: str) -> None:
         texto_limpio = "\n".join([linea for linea in lineas if linea])
 
         # 4. Segmentar en chunks basados en palabras
-        lista_chunks = segmentar_texto(
-            texto_limpio,
-            max_palabras_por_chunk=200,
-            solapamiento=50
-        )
+        lista_chunks = segmentar_texto(texto_limpio, max_palabras_por_chunk=200, solapamiento=50)
 
         nombre_archivo = os.path.basename(ruta_pdf)
 
@@ -98,7 +91,7 @@ def ingesta_pdfs_local(carpeta_pdfs: str) -> None:
                 "nombre_archivo": nombre_archivo,
                 "ruta": ruta_pdf,
                 "texto_chunk": chunk,
-                "fecha_ingesta": ahora
+                "fecha_ingesta": ahora,
             }
             documentos_a_insertar.append(doc)
 
@@ -107,16 +100,16 @@ def ingesta_pdfs_local(carpeta_pdfs: str) -> None:
             print(f"Insertados {len(documentos_a_insertar)} chunks de: {nombre_archivo}")
 
 
-# Bloque de prueba: Descomentar para probar cosas. 
-#if __name__ == "__main__":
+# Bloque de prueba: Descomentar para probar cosas.
+# if __name__ == "__main__":
 #    carpeta = r"C:\Users\carlo\Documents\GitHub\MIOTI_DL_ProyectoFinal\Document\standards_management_and_harmonization"
 #    ingesta_pdfs_local(carpeta)
 
-  # 1) Mostrar cuántos chunks hay en total
-#total_chunks = collection.count_documents({})
-#print(f"Total de chunks almacenados: {total_chunks}\n")
+# 1) Mostrar cuántos chunks hay en total
+# total_chunks = collection.count_documents({})
+# print(f"Total de chunks almacenados: {total_chunks}\n")
 
 # 2) Listar los primeros 5 chunks (solo metadatos breves)
-#print("=== Primeros 5 chunks (document_id, nombre_archivo, chunk_index) ===")
-#for doc in collection.find().limit(5):
+# print("=== Primeros 5 chunks (document_id, nombre_archivo, chunk_index) ===")
+# for doc in collection.find().limit(5):
 #    print(f"- {doc['document_id']} | {doc['nombre_archivo']} | índice {doc['chunk_index']}")
