@@ -18,7 +18,7 @@ from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
 from transformers import Emu3VQVAE
 
-from constants import (
+from src.constants import (
     DB_NAME,
     HUGGINGFACE_TOKEN,
     INDEX_NAME,
