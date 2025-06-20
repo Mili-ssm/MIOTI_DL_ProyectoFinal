@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Self
 
 import certifi
 import torch
+from IPython import embed
 from llama_index.core import VectorStoreIndex, get_response_synthesizer
 from llama_index.core.indices.vector_store.retrievers import VectorIndexRetriever
 from llama_index.core.llms import LLM, ChatMessage
@@ -15,6 +16,7 @@ from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.llms.openai import OpenAI
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
+from transformers import Emu3VQVAE
 
 from constants import (
     DB_NAME,
@@ -101,6 +103,7 @@ class RAGConfig:
 class RAGService:
     vector_stores: VectorStoreIndex
     node_retriver: VectorIndexRetriever
+    embedded_model: "MultiModalEmbedding"
 
     def retrieve_data(self, query: str) -> list[NodeWithScore]:
         """
@@ -114,6 +117,7 @@ class RAGService:
         """
         Crea una instancia de RAGService a partir de la configuración proporcionada.
         """
+        embedded_model = config.get_embedded_model()
         mongo_vector_store = MongoDBAtlasVectorSearch(
             mongodb_client=MongoClient(MONGO_HOST, tlsCAFile=certifi.where()),
             db_name=DB_NAME,
@@ -125,13 +129,17 @@ class RAGService:
             storage_context=StorageContext.from_defaults(
                 vector_store=mongo_vector_store,
             ),
-            embed_model=config.get_embedded_model(),
+            embed_model=embedded_model,
         )
         node_retriever = VectorIndexRetriever(
             index=vector_store,
             similarity_top_k=3,
         )
-        return cls(vector_stores=vector_store, node_retriver=node_retriever)
+        return cls(
+            vector_stores=vector_store,
+            node_retriver=node_retriever,
+            embedded_model=embedded_model,
+        )
 
 
 @dataclass
