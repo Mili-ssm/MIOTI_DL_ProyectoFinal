@@ -3,7 +3,7 @@ from src.agents.llm import LLMConfig
 
 def test_completion():
     # ejemplo con llama
-    llm_service = LLMConfig().get_agent()
+    llm_service = LLMConfig().get_agent_model()
     questions = [
         "con que sitios colaboramos?",
         "SDP Technology Architecture, whats next?",
