@@ -1,10 +1,11 @@
 from dataclasses import dataclass
 
+import certifi
 from llama_index.core import SimpleDirectoryReader, VectorStoreIndex
-from llama_index.embeddings.openai import OpenAIEmbedding
-from llama_index.core.node_parser import SentenceSplitter
 from llama_index.core.extractors import TitleExtractor
 from llama_index.core.ingestion import IngestionPipeline
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.embeddings.openai import OpenAIEmbedding
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
 
@@ -27,15 +28,14 @@ class IngestionPipelineConfig:
     index_name: str = INDEX_NAME
 
     def run_pipeline(self) -> VectorStoreIndex:
-
         documents = SimpleDirectoryReader(self.documents_path, recursive=True).load_data()
 
-        client = MongoClient(self.mongo_uri)
+        client = MongoClient(self.mongo_uri, tlsCAFile=certifi.where())
         vector_store = MongoDBAtlasVectorSearch(
-            client=client,
+            mongodb_client=client,
             db_name=self.db_name,
             collection_name=self.collection,
-            index_name=self.index_name,
+            vector_index_name=self.index_name,
         )
 
         pipeline = IngestionPipeline(
