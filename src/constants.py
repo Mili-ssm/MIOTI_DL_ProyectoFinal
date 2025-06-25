@@ -1,3 +1,4 @@
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -20,3 +21,6 @@ DOCUMENTS_PATH: str = os.getenv("DOCUMENTS_PATH", "../Document")
 HUGGINGFACE_TOKEN: str = os.getenv("HUGGINGFACE_TOKEN", "")
 
 OPENAI_KEY: str = os.getenv("OPENAI_KEY", "")
+
+
+LOGGER = logging.getLogger(__name__)

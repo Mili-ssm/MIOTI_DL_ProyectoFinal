@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Self
 
 import certifi
 import torch
-from IPython import embed
 from llama_index.core import VectorStoreIndex, get_response_synthesizer
 from llama_index.core.indices.vector_store.retrievers import VectorIndexRetriever
 from llama_index.core.llms import LLM, ChatMessage
@@ -16,7 +15,6 @@ from llama_index.llms.huggingface import HuggingFaceLLM
 from llama_index.llms.openai import OpenAI
 from llama_index.vector_stores.mongodb import MongoDBAtlasVectorSearch
 from pymongo import MongoClient
-from transformers import Emu3VQVAE
 
 from src.constants import (
     DB_NAME,
