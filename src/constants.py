@@ -22,5 +22,4 @@ HUGGINGFACE_TOKEN: str = os.getenv("HUGGINGFACE_TOKEN", "")
 
 OPENAI_KEY: str = os.getenv("OPENAI_KEY", "")
 
-
 LOGGER = logging.getLogger(__name__)

@@ -1,3 +1,4 @@
+import os
 from dataclasses import dataclass
 from enum import Enum
 from typing import TYPE_CHECKING, Self
@@ -37,8 +38,8 @@ class Provider(Enum):
 
 @dataclass
 class LLMConfig:
-    provider: Provider = Provider.LLAMA
-    llm_model_name: str = "meta-llama/Llama-3.2-3B-Instruct"
+    provider: Provider = Provider.OPENAI  # LLAMA
+    llm_model_name: str = "gpt-4o-mini"  # "meta-llama/Llama-3.2-3B-Instruct"
 
     def get_agent_model(self) -> LLM:
         """
@@ -131,7 +132,7 @@ class RAGService:
         )
         node_retriever = VectorIndexRetriever(
             index=vector_store,
-            similarity_top_k=3,
+            similarity_top_k=9,
         )
         return cls(
             vector_stores=vector_store,

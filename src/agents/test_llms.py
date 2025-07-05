@@ -52,8 +52,8 @@ def test_pipelines():
         LOGGER.info("_" * 80)
         LOGGER.info(f"Pregunta: {question}")
         pipeline = ai_service.select_pipeline(question)
-        response = pipeline.execute(ai_service, question)
-        LOGGER.info(f"Respuesta: {response}")
+
+        LOGGER.info(f"Pipeline seleccionados: {[p.name for p in pipeline]}")
         LOGGER.info("_" * 80)
 
 

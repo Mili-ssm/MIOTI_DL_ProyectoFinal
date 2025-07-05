@@ -111,3 +111,8 @@ strictSetInference = true
 typeCheckingMode = "standard"
 venv = ".venv"
 venvPath = "."
+
+[dependency-groups]
+dev = [
+    "ipywidgets>=8.1.7",
+]
