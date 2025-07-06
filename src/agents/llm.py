@@ -19,12 +19,14 @@ from pymongo import MongoClient
 
 from src.constants import (
     DB_NAME,
+    DOCUMENTS_PATH,
     HUGGINGFACE_TOKEN,
     INDEX_NAME,
     MONGO_COLLECTION,
     MONGO_HOST,
     OPENAI_KEY,
 )
+from src.llama_ingestion import IngestionPipelineConfig
 
 if TYPE_CHECKING:
     from llama_index.core.base.response.schema import Response
@@ -103,6 +105,7 @@ class RAGService:
     vector_stores: VectorStoreIndex
     node_retriver: VectorIndexRetriever
     embedded_model: "MultiModalEmbedding"
+    documents_path: str = DOCUMENTS_PATH
 
     def retrieve_data(self, query: str) -> list[NodeWithScore]:
         """
@@ -112,30 +115,43 @@ class RAGService:
         return nodes  # noqa: RET504
 
     @classmethod
-    def from_config(cls, config: RAGConfig) -> Self:
+    def from_config(
+        cls,
+        config: RAGConfig,
+        ingesiton_pipeline: IngestionPipelineConfig | None = None,
+    ) -> Self:
         """
         Crea una instancia de RAGService a partir de la configuración proporcionada.
         """
         embedded_model = config.get_embedded_model()
-        mongo_vector_store = MongoDBAtlasVectorSearch(
-            mongodb_client=MongoClient(MONGO_HOST, tlsCAFile=certifi.where()),
-            db_name=DB_NAME,
-            collection_name=MONGO_COLLECTION,
-            vector_index_name=INDEX_NAME,
+        nodes = (
+            ingesiton_pipeline.run_pipeline(embedding=embedded_model) if ingesiton_pipeline else []
         )
-        vector_store = VectorStoreIndex(
-            nodes=[],
+        print(f"Total nodes ingested: {len(nodes)}")
+        if MONGO_HOST:
+            vector_store = MongoDBAtlasVectorSearch(
+                mongodb_client=MongoClient(MONGO_HOST, tlsCAFile=certifi.where()),
+                db_name=DB_NAME,
+                collection_name=MONGO_COLLECTION,
+                vector_index_name=INDEX_NAME,
+            )
+            vector_store.add(list(nodes))
+        else:
+            vector_store = None
+
+        vector_store_index = VectorStoreIndex(
+            nodes=nodes,
             storage_context=StorageContext.from_defaults(
-                vector_store=mongo_vector_store,
+                vector_store=vector_store,
             ),
             embed_model=embedded_model,
         )
         node_retriever = VectorIndexRetriever(
-            index=vector_store,
+            index=vector_store_index,
             similarity_top_k=9,
         )
         return cls(
-            vector_stores=vector_store,
+            vector_stores=vector_store_index,
             node_retriver=node_retriever,
             embedded_model=embedded_model,
         )
